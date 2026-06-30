@@ -22,6 +22,7 @@ Single-Page Application (SPA) built with Vite + React 18 + TypeScript. Connects 
 | Forms | React Hook Form + Zod | 7.x / 3.x | Form state + validation |
 | Toasts | Sonner | 1.x | Notifications |
 | Icons | Lucide React | 0.454 | Icon set |
+| Barcode scanning | @zxing/browser + @zxing/library | 0.21.x | Camera-based barcode / QR decoding |
 
 ---
 
@@ -51,6 +52,8 @@ c:\projects\POS-frontend\
     │
     ├── types/
     │   └── api.ts              # ALL shared TypeScript types mirroring the Go models
+    │                           # Includes: User, POSProduct, Order, BankQRConfig,
+    │                           # StockItem, BarcodeProduct, ApiResponse, PaginatedResponse
     │
     ├── lib/
     │   ├── api.ts              # Axios instance — baseURL, JWT interceptor, 401 redirect
@@ -60,15 +63,18 @@ c:\projects\POS-frontend\
     │
     ├── services/               # Pure API functions — no React, no state
     │   ├── auth.ts             # login(), logout(), getCurrentUser(), registerUser()
-    │   ├── products.ts         # getProducts(), createProduct(), updateProduct(), deleteProduct()
+    │   ├── products.ts         # getProducts(), getProduct(), getProductByBarcode()
+    │   │                       # createProduct(), updateProduct(), deleteProduct()
     │   ├── orders.ts           # createOrder(), getOrders(), cancelOrder(), markOrderPaid()
     │   ├── stock.ts            # getStock(), checkAvailability(), syncStock()
-    │   └── config.ts           # getBankQRConfig(), setBankQRConfig()
+    │   └── config.ts           # getBankQRConfig(), setBankQRConfig(), fetchQRCodeBlob()
     │
-    ├── hooks/                  # TanStack Query wrappers — data + loading + error
+    ├── hooks/                  # TanStack Query wrappers + custom hooks
     │   ├── useProducts.ts      # useProducts(search, page)
     │   ├── useOrders.ts        # useOrders({ page, payment_method, overdue })
-    │   └── useStock.ts         # useStock()
+    │   ├── useStock.ts         # useStock()
+    │   └── useBarcodeScanner.ts # Global keyboard listener for USB barcode scanners
+    │                           # Buffers rapid keystrokes; fires onScan(barcode) on Enter
     │
     ├── store/
     │   └── cart.ts             # Zustand cart — items, add, remove, updateQty, clear
@@ -78,6 +84,9 @@ c:\projects\POS-frontend\
     │   ├── Layout.tsx          # App shell — sidebar nav + mobile hamburger + outlet
     │   ├── ProtectedRoute.tsx  # Redirects unauthenticated users to /login
     │   ├── AdminRoute.tsx      # Redirects non-admin users to /
+    │   ├── CameraScanner.tsx   # Camera barcode scanner dialog (ZXing BrowserMultiFormatReader)
+    │   │                       # Opens rear camera, shows viewfinder with scan-line animation,
+    │   │                       # fires onScan(barcode) on first decode then releases stream
     │   └── ui/                 # shadcn/ui components (written manually, no CLI)
     │       ├── button.tsx
     │       ├── input.tsx
@@ -91,6 +100,8 @@ c:\projects\POS-frontend\
         ├── Login.tsx           # /login — email/password form
         ├── cashier/
         │   └── POS.tsx         # / — product grid + cart + payment method selection
+        │                       #     barcode input field (USB scanner or manual entry)
+        │                       #     camera scan button → CameraScanner dialog
         └── admin/
             ├── Products.tsx    # /admin/products — CRUD table + create/edit dialog
             ├── Orders.tsx      # /admin/orders — paginated table + detail dialog + cancel
@@ -222,6 +233,72 @@ Admin table columns follow the same breakpoint pattern — secondary columns are
 | `VITE_API_URL` | `http://localhost:4000` | Backend base URL |
 
 Set in `.env.local` (never commit). For LAN access from phone/tablet, change to the machine's local IP, e.g. `http://192.168.1.122:4000`.
+
+---
+
+## Barcode Scanning
+
+Two input methods, both call the same `GET /api/v1/products/barcode/:barcode` endpoint and then `add()` the product to the Zustand cart.
+
+### USB / Bluetooth Scanner (keyboard HID mode)
+
+```
+Scanner fires rapid keystrokes → window keydown events
+        │
+useBarcodeScanner hook (src/hooks/useBarcodeScanner.ts)
+        │  — ignores events when an <input>/<textarea> is focused
+        │  — buffers chars arriving within 100 ms of each other
+        │  — on Enter (or timeout) → fires onScan(barcode)
+        │
+handleBarcodeSubmit in POS.tsx
+        │
+GET /api/v1/products/barcode/:barcode
+        │
+add(POSProduct) → cart updated → toast shown
+```
+
+### Manual barcode entry
+
+The barcode input field (with a `Barcode` icon) in the POS toolbar accepts typed barcodes. Pressing Enter triggers the same `handleBarcodeSubmit`.
+
+### Camera scanner
+
+Clicking the `Camera` icon inside the barcode input opens `CameraScanner`:
+
+```
+CameraScanner dialog opens
+        │
+BrowserMultiFormatReader (ZXing) decodes live video stream
+        │  — requests rear camera (facingMode: 'environment')
+        │  — supports EAN-13, EAN-8, Code-128, QR, and other formats
+        │  — ignores NotFoundException (no barcode in frame) silently
+        │
+First successful decode → onScan(barcode) → dialog closes
+        │
+handleBarcodeSubmit → same flow as USB scanner
+        │
+Camera stream released (BrowserMultiFormatReader.releaseAllStreams)
+```
+
+> **Camera permission note:** Browsers require HTTPS (or `localhost`) to access the camera. On LAN (`http://192.168.1.x`), camera scanning will be blocked by the browser. See [Integration Guide §15](#15-barcode-scanning) for the workaround.
+
+### Product lookup logic
+
+```ts
+// 1. Look up barcode → get pos_product_id + id
+const barcodeProduct = await getProductByBarcode(barcode)
+
+// 2. Prefer already-loaded product (avoids extra round-trip)
+const loaded = products.find(p => p.pos_product_id === barcodeProduct.pos_product_id)
+
+// 3. Fall back to fetching the full POSProduct (handles pagination edge cases)
+const product = loaded ?? await getProduct(barcodeProduct.id)
+
+// 4. Guard inactive products
+if (!product.is_active) { toast.error(...); return }
+
+add(product)
+```
 
 ---
 

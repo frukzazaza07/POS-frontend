@@ -93,6 +93,27 @@ export interface ProductAvailability {
   details: AvailabilityDetail[]
 }
 
+export interface BarcodeProduct {
+  id: string
+  pos_product_id: string
+  name: string
+  sku: string
+  barcode: string
+  is_active: boolean
+  bom: Array<{
+    inventory_item_id: string
+    quantity_required: number
+    inventory_item: {
+      sku: string
+      name: string
+      unit: string
+      quantity_in_stock: number
+    }
+  }>
+  created_at: string
+  updated_at: string
+}
+
 export interface ApiResponse<T> {
   status: 'success' | 'error'
   message?: string

@@ -21,8 +21,8 @@ export default function LoginPage() {
     try {
       await login(email, password)
       navigate('/', { replace: true })
-    } catch (err) {
-      setError(getErrorMessage(err, 'Invalid email or password'))
+    } catch (err: any) {
+      setError(getErrorMessage(err, err?.message || 'An error occurred during login.'))
     } finally {
       setLoading(false)
     }

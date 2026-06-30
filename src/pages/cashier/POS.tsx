@@ -1,9 +1,11 @@
-import { useState, useEffect } from 'react'
-import { ArrowLeft, Minus, Plus, Search, ShoppingCart, Trash2 } from 'lucide-react'
+import { useState, useEffect, useRef, useCallback } from 'react'
+import { ArrowLeft, Barcode, Camera, Minus, Plus, Search, ShoppingCart, Trash2 } from 'lucide-react'
 import { toast } from 'sonner'
 import { useProducts } from '@/hooks/useProducts'
+import { useBarcodeScanner } from '@/hooks/useBarcodeScanner'
 import { useCart, selectTotal } from '@/store/cart'
 import { createOrder } from '@/services/orders'
+import { getProductByBarcode, getProduct } from '@/services/products'
 import { getBankQRConfig, fetchQRCodeBlob } from '@/services/config'
 import { getErrorMessage } from '@/lib/errors'
 import { cn } from '@/lib/utils'
@@ -20,6 +22,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog'
 import type { BankQRConfig, PaymentMethod, POSProduct } from '@/types/api'
+import CameraScanner from '@/components/CameraScanner'
 
 const CATEGORY_EMOJI: Record<string, string> = {
   beverages: '☕',
@@ -402,6 +405,10 @@ export default function POSPage() {
   const [loading, setLoading] = useState(false)
   const [cartOpen, setCartOpen] = useState(false)
   const [confirmOpen, setConfirmOpen] = useState(false)
+  const [barcodeInput, setBarcodeInput] = useState('')
+  const [scanLoading, setScanLoading] = useState(false)
+  const [cameraOpen, setCameraOpen] = useState(false)
+  const barcodeRef = useRef<HTMLInputElement>(null)
 
   const { data, isLoading } = useProducts(search)
   const products = data?.items ?? []
@@ -411,6 +418,36 @@ export default function POSPage() {
   const clear = useCart((s) => s.clear)
   const total = useCart(selectTotal)
   const itemCount = items.reduce((s, i) => s + i.quantity, 0)
+
+  const handleBarcodeSubmit = useCallback(async (barcode: string) => {
+    const code = barcode.trim()
+    if (!code) return
+    setScanLoading(true)
+    try {
+      const barcodeProduct = await getProductByBarcode(code)
+      // Prefer already-loaded product to avoid an extra round-trip
+      const loaded = products.find((p) => p.pos_product_id === barcodeProduct.pos_product_id)
+      const product: POSProduct = loaded ?? await getProduct(barcodeProduct.id)
+      if (!product.is_active) {
+        toast.error(`${product.name} is not available`)
+        return
+      }
+      add(product)
+      toast.success(`Added: ${product.name}`)
+    } catch (err: unknown) {
+      const status = (err as { response?: { status?: number } })?.response?.status
+      if (status === 404) {
+        toast.error(`No product found for barcode: ${code}`)
+      } else {
+        toast.error(getErrorMessage(err, 'Barcode scan failed'))
+      }
+    } finally {
+      setScanLoading(false)
+    }
+  }, [products, add])
+
+  // Capture scanner input when no input element is focused
+  useBarcodeScanner(handleBarcodeSubmit)
 
   const resetForm = () => {
     setNotes('')
@@ -479,14 +516,41 @@ export default function POSPage() {
 
       {/* ── Product grid ───────────────────────────────── */}
       <div className="flex-1 flex flex-col overflow-hidden p-3 sm:p-4 gap-3 sm:gap-4">
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
-          <Input
-            className="pl-9"
-            placeholder="Search products..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
+        <div className="flex gap-2">
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+            <Input
+              className="pl-9"
+              placeholder="Search products..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
+          </div>
+          <div className="relative w-44 shrink-0">
+            <Barcode className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+            <Input
+              ref={barcodeRef}
+              className={cn('pl-9 pr-9', scanLoading && 'opacity-60')}
+              placeholder="Scan barcode..."
+              value={barcodeInput}
+              disabled={scanLoading}
+              onChange={(e) => setBarcodeInput(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  handleBarcodeSubmit(barcodeInput)
+                  setBarcodeInput('')
+                }
+              }}
+            />
+            <button
+              type="button"
+              onClick={() => setCameraOpen(true)}
+              className="absolute right-2 top-1/2 -translate-y-1/2 p-1 rounded text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
+              title="Scan with camera"
+            >
+              <Camera className="h-4 w-4" />
+            </button>
+          </div>
         </div>
 
         {isLoading ? (
@@ -571,6 +635,16 @@ export default function POSPage() {
         notes={notes}
         total={total}
         loading={loading}
+      />
+
+      {/* ── Camera barcode scanner ── */}
+      <CameraScanner
+        open={cameraOpen}
+        onClose={() => setCameraOpen(false)}
+        onScan={(barcode) => {
+          setCameraOpen(false)
+          handleBarcodeSubmit(barcode)
+        }}
       />
 
     </div>

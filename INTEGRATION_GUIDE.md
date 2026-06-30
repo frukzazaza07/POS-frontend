@@ -392,3 +392,76 @@ Vite only exposes variables prefixed with `VITE_` to the browser bundle.
 | Stock page is cached | `GET /api/v1/stock` returns a 5-minute cache from the backend; use Sync Stock (admin) to force refresh |
 | Bank QR image | URL must be publicly accessible — the browser fetches it directly. Upload to your own storage (S3, Cloudinary, etc.) |
 | PAY_LATER alerts | The backend sends webhook alerts every hour for overdue orders. Configure `ALERT_WEBHOOK_URL` in the Go backend `.env` |
+| Camera on LAN HTTP | Browsers block camera access on non-`localhost` HTTP origins. Use HTTPS or Chrome's `--unsafely-treat-insecure-origin-as-secure` flag for LAN testing. See §15. |
+
+---
+
+## 15. Barcode Scanning
+
+The POS page supports three barcode input methods. All three call `GET /api/v1/products/barcode/:barcode` and add the matched product to the cart.
+
+### Method 1 — USB / Bluetooth scanner (keyboard HID)
+
+Most wired and Bluetooth barcode scanners act as a keyboard: they emit the barcode digits rapidly and then send Enter. The `useBarcodeScanner` hook captures this automatically with no configuration needed.
+
+**How it works:**
+- The hook attaches a global `window keydown` listener.
+- It ignores keystrokes while an `<input>`, `<textarea>`, or `<select>` is focused (so it does not interfere with typing).
+- Characters arriving within 100 ms of each other are buffered.
+- On Enter (or if the buffer times out), the accumulated string is sent to `onScan()`.
+
+**Usage:** plug in the scanner and scan a product — it just works.
+
+### Method 2 — Manual barcode entry
+
+A barcode text input (🏷 icon) sits in the POS toolbar. The cashier can type or paste a barcode and press Enter.
+
+### Method 3 — Camera scanner
+
+Clicking the camera icon (📷) inside the barcode input opens a full dialog with a live viewfinder powered by `@zxing/browser`.
+
+**Supported formats:** EAN-13, EAN-8, Code-128, Code-39, QR Code, Data Matrix, and more (all formats supported by ZXing's `BrowserMultiFormatReader`).
+
+**Camera selection:** requests `facingMode: 'environment'` — rear camera on phones/tablets, any available camera on desktops.
+
+**Stream lifecycle:** the camera stream is released immediately after the first successful scan, or when the dialog is closed.
+
+### HTTPS requirement for camera on LAN
+
+Browsers enforce the [Secure Context](https://developer.mozilla.org/en-US/docs/Web/Security/Secure_Contexts) policy: `getUserMedia` (camera) is only available on `https://` or `http://localhost`. When the POS is accessed over LAN (`http://192.168.1.x`), the camera button will be blocked.
+
+**Options to enable camera on LAN:**
+
+**Option A — Chrome flag (quick dev/test):**
+```
+chrome://flags/#unsafely-treat-insecure-origin-as-secure
+# Add: http://192.168.1.122:5173
+# Relaunch Chrome
+```
+
+**Option B — Self-signed HTTPS with Vite (recommended for production use):**
+
+1. Install `@vitejs/plugin-basic-ssl`:
+   ```bash
+   npm install -D @vitejs/plugin-basic-ssl
+   ```
+
+2. Update `vite.config.ts`:
+   ```ts
+   import basicSsl from '@vitejs/plugin-basic-ssl'
+
+   export default defineConfig({
+     plugins: [react(), basicSsl()],
+     server: { host: true },
+   })
+   ```
+
+3. Restart dev server — Vite will serve on `https://192.168.1.122:5173`.
+   Browsers will warn about the self-signed certificate; click **Advanced → Proceed**.
+
+**Option C — Reverse proxy with a real certificate (production):**
+Put Nginx/Caddy in front with a Let's Encrypt certificate. Camera will work without any browser exceptions.
+
+### Adding a barcode to a product (backend)
+
+Barcodes are registered on the backend via the inventory/product management system. Each `BarcodeProduct` record links a barcode string to a `pos_product_id` and includes the product's BOM (Bill of Materials) with live stock quantities. The frontend only reads — it never creates barcode records.

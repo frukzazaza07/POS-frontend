@@ -1,5 +1,5 @@
 import api from '@/lib/api'
-import type { ApiResponse, PaginatedResponse, POSProduct } from '@/types/api'
+import type { ApiResponse, BarcodeProduct, PaginatedResponse, POSProduct } from '@/types/api'
 
 export async function getProducts(params?: {
   search?: string
@@ -46,4 +46,11 @@ export async function updateProduct(
 
 export async function deleteProduct(id: string): Promise<void> {
   await api.delete(`/api/v1/products/${id}`)
+}
+
+export async function getProductByBarcode(barcode: string): Promise<BarcodeProduct> {
+  const { data } = await api.get<ApiResponse<BarcodeProduct>>(
+    `/api/v1/products/barcode/${encodeURIComponent(barcode)}`,
+  )
+  return data.data!
 }

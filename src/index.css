@@ -58,3 +58,16 @@
     font-feature-settings: "rlig" 1, "calt" 1;
   }
 }
+
+@keyframes scan {
+  0%   { top: 10%; }
+  50%  { top: 85%; }
+  100% { top: 10%; }
+}
+
+@layer utilities {
+  .animate-scan {
+    animation: scan 1.8s ease-in-out infinite;
+    position: absolute;
+  }
+}
