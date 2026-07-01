@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { BrowserMultiFormatReader } from '@zxing/browser'
 import { ChecksumException, FormatException, NotFoundException } from '@zxing/library'
 import { Camera, X } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -17,6 +18,8 @@ interface Props {
 }
 
 export default function CameraScanner({ open, onClose, onScan }: Props) {
+  const { t } = useTranslation()
+
   // Callback ref so the effect never restarts just because the parent re-rendered
   const onScanRef = useRef(onScan)
   const onCloseRef = useRef(onClose)
@@ -40,22 +43,15 @@ export default function CameraScanner({ open, onClose, onScan }: Props) {
     setError('')
     setReady(false)
 
-    // requestAnimationFrame decode loop — runs every display frame (~60fps),
-    // far more responsive than ZXing's default 500ms setTimeout interval.
     const decode = () => {
       if (!active) return
       try {
         const result = reader.decode(videoEl)
-        // Barcode found
         active = false
         onScanRef.current(result.getText())
         onCloseRef.current()
         return
       } catch (e) {
-        // NotFoundException  = no barcode candidates in frame       → keep going
-        // ChecksumException  = candidate found but checksum failed  → keep going
-        // FormatException    = candidate found but format malformed → keep going
-        // anything else      = unexpected; stop and show message
         const isRetryable =
           e instanceof NotFoundException ||
           e instanceof ChecksumException ||
@@ -87,11 +83,9 @@ export default function CameraScanner({ open, onClose, onScan }: Props) {
     navigator.mediaDevices
       .getUserMedia({ video: { facingMode: { ideal: 'environment' } } })
       .then((s) => {
-        if (!active) { s.getTracks().forEach((t) => t.stop()); return }
+        if (!active) { s.getTracks().forEach((track) => track.stop()); return }
         stream = s
         videoEl.srcObject = s
-
-        // Wait for metadata so videoWidth / videoHeight are non-zero before decoding
         if (videoEl.readyState >= 1 /* HAVE_METADATA */) {
           startStream()
         } else {
@@ -101,9 +95,9 @@ export default function CameraScanner({ open, onClose, onScan }: Props) {
       .catch((err: Error) => {
         if (!active) return
         if (err.name === 'NotAllowedError') {
-          setError('Camera permission denied. Allow camera access and try again.')
+          setError(t('camera.permissionDenied'))
         } else if (err.name === 'NotFoundError') {
-          setError('No camera found on this device.')
+          setError(t('camera.noCamera'))
         } else {
           setError(err.message)
         }
@@ -113,7 +107,7 @@ export default function CameraScanner({ open, onClose, onScan }: Props) {
       active = false
       cancelAnimationFrame(rafId)
       videoEl.removeEventListener('loadedmetadata', startStream)
-      stream?.getTracks().forEach((t) => t.stop())
+      stream?.getTracks().forEach((track) => track.stop())
       videoEl.srcObject = null
     }
   }, [open, videoEl]) // onScan / onClose intentionally omitted — handled via refs
@@ -124,7 +118,7 @@ export default function CameraScanner({ open, onClose, onScan }: Props) {
         <DialogHeader className="px-4 pt-4 pb-2">
           <DialogTitle className="flex items-center gap-2">
             <Camera className="h-4 w-4" />
-            Scan Barcode
+            {t('camera.title')}
           </DialogTitle>
         </DialogHeader>
 
@@ -169,18 +163,18 @@ export default function CameraScanner({ open, onClose, onScan }: Props) {
           {/* Loading overlay */}
           {!ready && !error && (
             <div className="absolute inset-0 flex items-center justify-center bg-black/40">
-              <p className="text-white text-sm">Starting camera...</p>
+              <p className="text-white text-sm">{t('camera.starting')}</p>
             </div>
           )}
         </div>
 
         <div className="px-4 py-3">
           <p className="text-xs text-muted-foreground text-center mb-3">
-            Point the camera at a barcode to add a product
+            {t('camera.pointCamera')}
           </p>
           <Button variant="outline" className="w-full" onClick={onClose}>
             <X className="h-4 w-4 mr-2" />
-            Cancel
+            {t('camera.cancel')}
           </Button>
         </div>
       </DialogContent>

@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { ArrowLeft, Barcode, Camera, Minus, Plus, Search, ShoppingCart, Trash2 } from 'lucide-react'
 import { toast } from 'sonner'
+import { useTranslation } from 'react-i18next'
 import { useProducts } from '@/hooks/useProducts'
 import { useBarcodeScanner } from '@/hooks/useBarcodeScanner'
 import { useCart, selectTotal } from '@/store/cart'
@@ -36,12 +37,6 @@ function categoryEmoji(cat: string) {
   return CATEGORY_EMOJI[cat?.toLowerCase()] ?? '📦'
 }
 
-const PAYMENT_OPTIONS: { value: PaymentMethod; label: string; desc: string }[] = [
-  { value: 'CASH',       label: 'Cash',     desc: 'Pay at counter' },
-  { value: 'BANK_QRCODE', label: 'QR Code', desc: 'Bank transfer' },
-  { value: 'PAY_LATER',  label: 'Pay Later', desc: 'Bill to customer' },
-]
-
 function ProductCard({ product, onClick }: { product: POSProduct; onClick: () => void }) {
   return (
     <Card
@@ -68,6 +63,7 @@ function ProductCard({ product, onClick }: { product: POSProduct; onClick: () =>
 }
 
 function CartItems() {
+  const { t } = useTranslation()
   const items = useCart((s) => s.items)
   const remove = useCart((s) => s.remove)
   const updateQty = useCart((s) => s.updateQty)
@@ -76,7 +72,7 @@ function CartItems() {
     return (
       <div className="flex flex-col items-center justify-center h-full gap-2 text-muted-foreground py-12">
         <ShoppingCart className="h-10 w-10 opacity-20" />
-        <p className="text-sm">Tap a product to add</p>
+        <p className="text-sm">{t('pos.tapToAdd')}</p>
       </div>
     )
   }
@@ -149,11 +145,19 @@ function CartFooter({
   total, onCheckout, onClear,
   loading, hasItems,
 }: CartFooterProps) {
+  const { t } = useTranslation()
+
+  const paymentOptions: { value: PaymentMethod; label: string; desc: string }[] = [
+    { value: 'CASH',        label: t('pos.payment.cash'),    desc: t('pos.payment.cashDesc') },
+    { value: 'BANK_QRCODE', label: t('pos.payment.qrCode'),  desc: t('pos.payment.qrCodeDesc') },
+    { value: 'PAY_LATER',   label: t('pos.payment.payLater'), desc: t('pos.payment.payLaterDesc') },
+  ]
+
   return (
     <div className="p-4 border-t space-y-3">
       {/* Payment method */}
       <div className="grid grid-cols-3 gap-1.5">
-        {PAYMENT_OPTIONS.map((opt) => (
+        {paymentOptions.map((opt) => (
           <button
             key={opt.value}
             onClick={() => onPaymentMethodChange(opt.value)}
@@ -173,19 +177,19 @@ function CartFooter({
       {paymentMethod === 'PAY_LATER' && (
         <div className="space-y-2 p-3 rounded-md bg-muted/40 border border-dashed">
           <Input
-            placeholder="Customer name *"
+            placeholder={t('pos.customerName')}
             value={customerName}
             onChange={(e) => onCustomerNameChange(e.target.value)}
           />
           <div className="grid grid-cols-2 gap-2">
             <Input
-              placeholder="Phone *"
+              placeholder={t('pos.customerPhone')}
               value={customerPhone}
               onChange={(e) => onCustomerPhoneChange(e.target.value)}
             />
             <Input
               type="number"
-              placeholder="Due days"
+              placeholder={t('pos.dueDays')}
               value={dueDays || ''}
               min={1}
               onChange={(e) => onDueDaysChange(Number(e.target.value))}
@@ -195,19 +199,19 @@ function CartFooter({
       )}
 
       <Input
-        placeholder="Order notes..."
+        placeholder={t('pos.orderNotes')}
         value={notes}
         onChange={(e) => onNotesChange(e.target.value)}
       />
 
       <div className="flex justify-between items-center">
-        <span className="text-sm font-medium text-muted-foreground">Total</span>
+        <span className="text-sm font-medium text-muted-foreground">{t('pos.total')}</span>
         <span className="text-xl font-bold">฿{total.toFixed(2)}</span>
       </div>
 
       {hasItems && (
         <Button variant="outline" size="sm" className="w-full" onClick={onClear}>
-          Clear cart
+          {t('pos.clearCart')}
         </Button>
       )}
 
@@ -218,19 +222,13 @@ function CartFooter({
         disabled={loading || !hasItems}
       >
         {loading
-          ? 'Processing...'
+          ? t('pos.processing')
           : paymentMethod === 'PAY_LATER'
-          ? 'Confirm — Pay Later'
-          : 'Confirm Sale'}
+          ? t('pos.confirmPayLater')
+          : t('pos.confirmSale')}
       </Button>
     </div>
   )
-}
-
-const PAYMENT_LABELS: Record<PaymentMethod, string> = {
-  CASH: 'Cash',
-  BANK_QRCODE: 'QR Code / Bank Transfer',
-  PAY_LATER: 'Pay Later',
 }
 
 function ConfirmOrderDialog({
@@ -256,10 +254,17 @@ function ConfirmOrderDialog({
   total: number
   loading: boolean
 }) {
+  const { t } = useTranslation()
   const items = useCart((s) => s.items)
   const [qrUrl, setQrUrl] = useState('')
   const [qrLoading, setQrLoading] = useState(false)
   const [qrConfig, setQrConfig] = useState<BankQRConfig | null>(null)
+
+  const paymentLabels: Record<PaymentMethod, string> = {
+    CASH: t('pos.payment.cash'),
+    BANK_QRCODE: t('pos.payment.qrCodeFull'),
+    PAY_LATER: t('pos.payment.payLater'),
+  }
 
   // For BANK_QRCODE: fetch QR and bank details as soon as dialog opens
   useEffect(() => {
@@ -279,11 +284,11 @@ function ConfirmOrderDialog({
     <Dialog open={open} onOpenChange={(v) => !v && !loading && onClose()}>
       <DialogContent className="max-w-sm">
         <DialogHeader>
-          <DialogTitle>{isQR ? 'Scan to Pay' : 'Confirm Sale'}</DialogTitle>
+          <DialogTitle>{isQR ? t('pos.confirm.scanToPay') : t('pos.confirm.confirmSale')}</DialogTitle>
           <DialogDescription>
             {isQR
-              ? 'Show the QR to the customer. Confirm once payment is received.'
-              : 'Review the order before submitting.'}
+              ? t('pos.confirm.showQRToCustomer')
+              : t('pos.confirm.reviewOrder')}
           </DialogDescription>
         </DialogHeader>
 
@@ -293,12 +298,12 @@ function ConfirmOrderDialog({
             <>
               <div className="mx-auto w-52 h-52 flex items-center justify-center rounded-lg border bg-white p-2">
                 {qrLoading ? (
-                  <p className="text-xs text-muted-foreground">Generating QR...</p>
+                  <p className="text-xs text-muted-foreground">{t('pos.confirm.generatingQR')}</p>
                 ) : qrUrl ? (
                   <img src={qrUrl} alt="PromptPay QR" className="w-full h-full object-contain" />
                 ) : (
                   <p className="text-xs text-muted-foreground text-center px-4">
-                    QR unavailable — ask admin to set PromptPay ID.
+                    {t('pos.confirm.qrUnavailable')}
                   </p>
                 )}
               </div>
@@ -306,15 +311,15 @@ function ConfirmOrderDialog({
               {qrConfig && (
                 <div className="rounded-md border p-3 space-y-1 text-sm">
                   <div className="flex justify-between">
-                    <span className="text-muted-foreground">Bank</span>
+                    <span className="text-muted-foreground">{t('pos.confirm.bank')}</span>
                     <span className="font-medium">{qrConfig.bank_name}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-muted-foreground">Account</span>
+                    <span className="text-muted-foreground">{t('pos.confirm.account')}</span>
                     <span className="font-medium">{qrConfig.account_name}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-muted-foreground">Number</span>
+                    <span className="text-muted-foreground">{t('pos.confirm.number')}</span>
                     <span className="font-medium font-mono">{qrConfig.account_number}</span>
                   </div>
                 </div>
@@ -340,8 +345,8 @@ function ConfirmOrderDialog({
           {/* Payment method (non-QR only) */}
           {!isQR && (
             <div className="flex justify-between text-sm">
-              <span className="text-muted-foreground">Payment</span>
-              <span className="font-medium">{PAYMENT_LABELS[paymentMethod]}</span>
+              <span className="text-muted-foreground">{t('pos.confirm.payment')}</span>
+              <span className="font-medium">{paymentLabels[paymentMethod]}</span>
             </div>
           )}
 
@@ -349,16 +354,16 @@ function ConfirmOrderDialog({
           {paymentMethod === 'PAY_LATER' && (
             <div className="rounded-md border border-dashed bg-muted/40 p-3 text-sm space-y-1">
               <div className="flex justify-between">
-                <span className="text-muted-foreground">Customer</span>
+                <span className="text-muted-foreground">{t('pos.confirm.customer')}</span>
                 <span className="font-medium">{customerName}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-muted-foreground">Phone</span>
+                <span className="text-muted-foreground">{t('pos.confirm.phone')}</span>
                 <span className="font-medium">{customerPhone}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-muted-foreground">Due in</span>
-                <span className="font-medium">{dueDays} days</span>
+                <span className="text-muted-foreground">{t('pos.confirm.dueIn')}</span>
+                <span className="font-medium">{dueDays} {t('pos.confirm.days')}</span>
               </div>
             </div>
           )}
@@ -366,27 +371,27 @@ function ConfirmOrderDialog({
           {/* Notes */}
           {notes.trim() && (
             <p className="text-sm text-muted-foreground">
-              Notes: <span className="text-foreground">{notes}</span>
+              {t('pos.confirm.notes')} <span className="text-foreground">{notes}</span>
             </p>
           )}
 
           {/* Total */}
           <div className="flex justify-between items-center border-t pt-3 font-bold">
-            <span>Total</span>
+            <span>{t('pos.total')}</span>
             <span className="text-primary text-xl">฿{total.toFixed(2)}</span>
           </div>
         </div>
 
         <DialogFooter className="gap-2 sm:gap-0">
           <Button variant="outline" onClick={onClose} disabled={loading}>
-            Back
+            {t('pos.confirm.back')}
           </Button>
           <Button onClick={onConfirm} disabled={loading || (isQR && qrLoading)}>
             {loading
-              ? 'Processing...'
+              ? t('pos.processing')
               : isQR
-              ? 'Payment Received — Submit'
-              : 'Confirm & Submit'}
+              ? t('pos.confirm.paymentReceived')
+              : t('pos.confirm.confirmSubmit')}
           </Button>
         </DialogFooter>
       </DialogContent>
@@ -396,6 +401,7 @@ function ConfirmOrderDialog({
 
 
 export default function POSPage() {
+  const { t } = useTranslation()
   const [search, setSearch] = useState('')
   const [notes, setNotes] = useState('')
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('CASH')
@@ -425,28 +431,26 @@ export default function POSPage() {
     setScanLoading(true)
     try {
       const barcodeProduct = await getProductByBarcode(code)
-      // Prefer already-loaded product to avoid an extra round-trip
       const loaded = products.find((p) => p.pos_product_id === barcodeProduct.pos_product_id)
       const product: POSProduct = loaded ?? await getProduct(barcodeProduct.id)
       if (!product.is_active) {
-        toast.error(`${product.name} is not available`)
+        toast.error(t('pos.toast.productNotAvailable', { name: product.name }))
         return
       }
       add(product)
-      toast.success(`Added: ${product.name}`)
+      toast.success(t('pos.toast.productAdded', { name: product.name }))
     } catch (err: unknown) {
       const status = (err as { response?: { status?: number } })?.response?.status
       if (status === 404) {
-        toast.error(`No product found for barcode: ${code}`)
+        toast.error(t('pos.toast.barcodeNotFound', { barcode: code }))
       } else {
-        toast.error(getErrorMessage(err, 'Barcode scan failed'))
+        toast.error(getErrorMessage(err, t('pos.toast.barcodeScanFailed')))
       }
     } finally {
       setScanLoading(false)
     }
-  }, [products, add])
+  }, [products, add, t])
 
-  // Capture scanner input when no input element is focused
   useBarcodeScanner(handleBarcodeSubmit)
 
   const resetForm = () => {
@@ -457,17 +461,15 @@ export default function POSPage() {
     setPaymentMethod('CASH')
   }
 
-  // Step 1 — validate and open the review dialog
   const handleOpenConfirm = () => {
     if (items.length === 0) return
     if (paymentMethod === 'PAY_LATER') {
-      if (!customerName.trim()) { toast.error('Customer name is required for Pay Later'); return }
-      if (!customerPhone.trim()) { toast.error('Customer phone is required for Pay Later'); return }
+      if (!customerName.trim()) { toast.error(t('pos.toast.customerNameRequired')); return }
+      if (!customerPhone.trim()) { toast.error(t('pos.toast.customerPhoneRequired')); return }
     }
     setConfirmOpen(true)
   }
 
-  // Step 2 — employee confirmed; call the API
   const handleSubmitOrder = async () => {
     setLoading(true)
     try {
@@ -486,13 +488,13 @@ export default function POSPage() {
       }
 
       const order = await createOrder(payload)
-      toast.success(`Order ${order.pos_order_id} — ฿${order.total_amount.toFixed(2)}`)
+      toast.success(t('pos.toast.orderSuccess', { id: order.pos_order_id, amount: order.total_amount.toFixed(2) }))
       setConfirmOpen(false)
       clear()
       setCartOpen(false)
       resetForm()
     } catch (err) {
-      toast.error(getErrorMessage(err, 'Checkout failed'))
+      toast.error(getErrorMessage(err, t('pos.toast.checkoutFailed')))
     } finally {
       setLoading(false)
     }
@@ -521,7 +523,7 @@ export default function POSPage() {
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
             <Input
               className="pl-9"
-              placeholder="Search products..."
+              placeholder={t('pos.searchProducts')}
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
@@ -531,7 +533,7 @@ export default function POSPage() {
             <Input
               ref={barcodeRef}
               className={cn('pl-9 pr-9', scanLoading && 'opacity-60')}
-              placeholder="Scan barcode..."
+              placeholder={t('pos.scanBarcode')}
               value={barcodeInput}
               disabled={scanLoading}
               onChange={(e) => setBarcodeInput(e.target.value)}
@@ -546,7 +548,7 @@ export default function POSPage() {
               type="button"
               onClick={() => setCameraOpen(true)}
               className="absolute right-2 top-1/2 -translate-y-1/2 p-1 rounded text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
-              title="Scan with camera"
+              title={t('pos.scanWithCamera')}
             >
               <Camera className="h-4 w-4" />
             </button>
@@ -555,11 +557,11 @@ export default function POSPage() {
 
         {isLoading ? (
           <div className="flex-1 flex items-center justify-center text-muted-foreground">
-            Loading products...
+            {t('pos.loadingProducts')}
           </div>
         ) : products.length === 0 ? (
           <div className="flex-1 flex items-center justify-center text-muted-foreground">
-            No products found
+            {t('pos.noProductsFound')}
           </div>
         ) : (
           <div className="overflow-y-auto flex-1 pb-20 md:pb-2 pr-0.5">
@@ -576,7 +578,7 @@ export default function POSPage() {
       <div className="hidden md:flex w-80 flex-col border-l bg-card shrink-0">
         <div className="px-4 py-3 border-b flex items-center gap-2">
           <ShoppingCart className="h-5 w-5 text-muted-foreground" />
-          <span className="font-semibold">Cart</span>
+          <span className="font-semibold">{t('pos.cart')}</span>
           {itemCount > 0 && (
             <Badge variant="secondary" className="ml-auto">{itemCount}</Badge>
           )}
@@ -591,7 +593,7 @@ export default function POSPage() {
       <button
         onClick={() => setCartOpen(true)}
         className="md:hidden fixed bottom-5 right-5 z-30 h-14 w-14 rounded-full bg-primary text-primary-foreground shadow-lg flex items-center justify-center hover:bg-primary/90 active:scale-95 transition-all"
-        aria-label="Open cart"
+        aria-label={t('pos.cart')}
       >
         <ShoppingCart className="h-6 w-6" />
         {itemCount > 0 && (
@@ -608,12 +610,12 @@ export default function POSPage() {
             <button
               onClick={() => setCartOpen(false)}
               className="p-1.5 -ml-1.5 rounded-md hover:bg-accent transition-colors"
-              aria-label="Back"
+              aria-label={t('pos.confirm.back')}
             >
               <ArrowLeft className="h-5 w-5" />
             </button>
             <span className="font-semibold text-base">
-              Cart {itemCount > 0 && `(${itemCount})`}
+              {t('pos.cart')} {itemCount > 0 && `(${itemCount})`}
             </span>
           </div>
           <div className="flex-1 overflow-y-auto">

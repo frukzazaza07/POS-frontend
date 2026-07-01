@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
+import { useTranslation } from 'react-i18next'
 import { useOrders } from '@/hooks/useOrders'
 import { cancelOrder } from '@/services/orders'
 import { getErrorMessage } from '@/lib/errors'
@@ -42,6 +43,7 @@ function OrderDetailsDialog({
   order: Order | null
   onClose: () => void
 }) {
+  const { t } = useTranslation()
   const qc = useQueryClient()
   const currentUser = getCurrentUser()
 
@@ -54,7 +56,7 @@ function OrderDetailsDialog({
   const handleCancel = async () => {
     try {
       await cancelOrder(order.id)
-      toast.success('Order cancelled')
+      toast.success(t('orders.toast.cancelled'))
       qc.invalidateQueries({ queryKey: ['orders'] })
       onClose()
     } catch (err) {
@@ -80,7 +82,7 @@ function OrderDetailsDialog({
 
           {order.notes && (
             <p className="text-sm border rounded-md px-3 py-2 bg-muted/30">
-              Notes: {order.notes}
+              {t('orders.detail.notes')} {order.notes}
             </p>
           )}
 
@@ -102,13 +104,13 @@ function OrderDetailsDialog({
           </div>
 
           <div className="flex justify-between font-bold text-base pt-1">
-            <span>Total</span>
+            <span>{t('orders.detail.total')}</span>
             <span>฿{order.total_amount.toFixed(2)}</span>
           </div>
 
           {canCancel && (
             <Button variant="destructive" className="w-full" onClick={handleCancel}>
-              Cancel Order
+              {t('orders.detail.cancelOrder')}
             </Button>
           )}
         </div>
@@ -118,6 +120,7 @@ function OrderDetailsDialog({
 }
 
 export default function OrdersPage() {
+  const { t } = useTranslation()
   const [page, setPage] = useState(1)
   const [selected, setSelected] = useState<Order | null>(null)
   const { data, isLoading } = useOrders({ page })
@@ -127,26 +130,26 @@ export default function OrdersPage() {
 
   return (
     <div className="p-3 sm:p-6 space-y-4">
-      <h1 className="text-xl sm:text-2xl font-bold">Orders</h1>
+      <h1 className="text-xl sm:text-2xl font-bold">{t('orders.title')}</h1>
 
       {isLoading ? (
-        <div className="text-center py-16 text-muted-foreground">Loading...</div>
+        <div className="text-center py-16 text-muted-foreground">{t('orders.loading')}</div>
       ) : (
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Order ID</TableHead>
-              <TableHead className="hidden sm:table-cell">Date</TableHead>
-              <TableHead className="hidden md:table-cell">Cashier</TableHead>
-              <TableHead>Total</TableHead>
-              <TableHead>Status</TableHead>
+              <TableHead>{t('orders.table.orderId')}</TableHead>
+              <TableHead className="hidden sm:table-cell">{t('orders.table.date')}</TableHead>
+              <TableHead className="hidden md:table-cell">{t('orders.table.cashier')}</TableHead>
+              <TableHead>{t('orders.table.total')}</TableHead>
+              <TableHead>{t('orders.table.status')}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {orders.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={5} className="text-center text-muted-foreground py-12">
-                  No orders found
+                  {t('orders.noOrdersFound')}
                 </TableCell>
               </TableRow>
             ) : (
@@ -173,10 +176,10 @@ export default function OrdersPage() {
       )}
 
       <div className="flex flex-wrap items-center justify-between gap-2 text-sm text-muted-foreground pt-2">
-        <span>{total} order{total !== 1 ? 's' : ''}</span>
+        <span>{t('orders.count', { count: total })}</span>
         <div className="flex gap-2">
           <Button variant="outline" size="sm" disabled={page === 1} onClick={() => setPage((p) => p - 1)}>
-            Previous
+            {t('orders.previous')}
           </Button>
           <Button
             variant="outline"
@@ -184,7 +187,7 @@ export default function OrdersPage() {
             disabled={page * 20 >= total}
             onClick={() => setPage((p) => p + 1)}
           >
-            Next
+            {t('orders.next')}
           </Button>
         </div>
       </div>

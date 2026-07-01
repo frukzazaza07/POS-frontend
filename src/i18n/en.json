@@ -1,0 +1,266 @@
+{
+  "nav": {
+    "posSystem": "POS System",
+    "pointOfSale": "Point of Sale",
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu",
+    "pos": "POS",
+    "products": "Products",
+    "orders": "Orders",
+    "payLater": "Pay Later",
+    "stock": "Stock",
+    "bankQR": "Bank QR",
+    "users": "Users",
+    "logout": "Logout"
+  },
+  "login": {
+    "signInToAccount": "Sign in to your account",
+    "email": "Email",
+    "password": "Password",
+    "signIn": "Sign in",
+    "signingIn": "Signing in..."
+  },
+  "pos": {
+    "searchProducts": "Search products...",
+    "scanBarcode": "Scan barcode...",
+    "scanWithCamera": "Scan with camera",
+    "loadingProducts": "Loading products...",
+    "noProductsFound": "No products found",
+    "cart": "Cart",
+    "tapToAdd": "Tap a product to add",
+    "clearCart": "Clear cart",
+    "processing": "Processing...",
+    "confirmPayLater": "Confirm — Pay Later",
+    "confirmSale": "Confirm Sale",
+    "customerName": "Customer name *",
+    "customerPhone": "Phone *",
+    "dueDays": "Due days",
+    "orderNotes": "Order notes...",
+    "total": "Total",
+    "payment": {
+      "cash": "Cash",
+      "cashDesc": "Pay at counter",
+      "qrCode": "QR Code",
+      "qrCodeDesc": "Bank transfer",
+      "payLater": "Pay Later",
+      "payLaterDesc": "Bill to customer",
+      "qrCodeFull": "QR Code / Bank Transfer"
+    },
+    "confirm": {
+      "scanToPay": "Scan to Pay",
+      "confirmSale": "Confirm Sale",
+      "showQRToCustomer": "Show the QR to the customer. Confirm once payment is received.",
+      "reviewOrder": "Review the order before submitting.",
+      "generatingQR": "Generating QR...",
+      "qrUnavailable": "QR unavailable — ask admin to set PromptPay ID.",
+      "bank": "Bank",
+      "account": "Account",
+      "number": "Number",
+      "customer": "Customer",
+      "phone": "Phone",
+      "payment": "Payment",
+      "notes": "Notes:",
+      "dueIn": "Due in",
+      "days": "days",
+      "back": "Back",
+      "paymentReceived": "Payment Received — Submit",
+      "confirmSubmit": "Confirm & Submit"
+    },
+    "toast": {
+      "customerNameRequired": "Customer name is required for Pay Later",
+      "customerPhoneRequired": "Customer phone is required for Pay Later",
+      "checkoutFailed": "Checkout failed",
+      "productNotAvailable": "{{name}} is not available",
+      "productAdded": "Added: {{name}}",
+      "barcodeNotFound": "No product found for barcode: {{barcode}}",
+      "barcodeScanFailed": "Barcode scan failed",
+      "orderSuccess": "Order {{id}} — ฿{{amount}}"
+    }
+  },
+  "camera": {
+    "title": "Scan Barcode",
+    "pointCamera": "Point the camera at a barcode to add a product",
+    "cancel": "Cancel",
+    "starting": "Starting camera...",
+    "permissionDenied": "Camera permission denied. Allow camera access and try again.",
+    "noCamera": "No camera found on this device."
+  },
+  "products": {
+    "title": "Products",
+    "addProduct": "Add Product",
+    "editProduct": "Edit Product",
+    "searchPlaceholder": "Search products...",
+    "noProductsFound": "No products found",
+    "loading": "Loading...",
+    "count_one": "{{count}} product",
+    "count_other": "{{count}} products",
+    "table": {
+      "name": "Name",
+      "posId": "POS ID",
+      "category": "Category",
+      "price": "Price",
+      "status": "Status",
+      "actions": "Actions"
+    },
+    "badge": {
+      "active": "Active",
+      "inactive": "Inactive"
+    },
+    "form": {
+      "posProductId": "POS Product ID",
+      "name": "Name",
+      "price": "Price (฿)",
+      "category": "Category",
+      "description": "Description",
+      "active": "Active",
+      "cancel": "Cancel",
+      "saving": "Saving...",
+      "save": "Save"
+    },
+    "confirm": {
+      "delete": "Delete this product?"
+    },
+    "toast": {
+      "created": "Product created",
+      "updated": "Product updated",
+      "deleted": "Product deleted"
+    }
+  },
+  "orders": {
+    "title": "Orders",
+    "loading": "Loading...",
+    "noOrdersFound": "No orders found",
+    "count_one": "{{count}} order",
+    "count_other": "{{count}} orders",
+    "previous": "Previous",
+    "next": "Next",
+    "table": {
+      "orderId": "Order ID",
+      "date": "Date",
+      "cashier": "Cashier",
+      "total": "Total",
+      "status": "Status"
+    },
+    "detail": {
+      "notes": "Notes:",
+      "total": "Total",
+      "cancelOrder": "Cancel Order"
+    },
+    "toast": {
+      "cancelled": "Order cancelled"
+    }
+  },
+  "payLater": {
+    "title": "Pay Later",
+    "all": "All",
+    "overdue": "Overdue",
+    "loading": "Loading...",
+    "noOverdueOrders": "No overdue orders",
+    "noPayLaterOrders": "No pay-later orders",
+    "overdueLabel": "(overdue)",
+    "count_one": "{{count}} order",
+    "count_other": "{{count}} orders",
+    "table": {
+      "customer": "Customer",
+      "phone": "Phone",
+      "amount": "Amount",
+      "dueDate": "Due Date",
+      "status": "Status",
+      "action": "Action"
+    },
+    "badge": {
+      "paid": "Paid",
+      "overdue": "Overdue",
+      "pending": "Pending"
+    },
+    "markPaid": "Mark Paid",
+    "toast": {
+      "markedPaid": "Marked as paid"
+    }
+  },
+  "stock": {
+    "title": "Stock",
+    "loading": "Loading...",
+    "lastRefreshed": "Last refreshed {{time}}",
+    "syncing": "Syncing...",
+    "syncStock": "Sync Stock",
+    "noStockData": "No stock data",
+    "table": {
+      "sku": "SKU",
+      "name": "Name",
+      "inStock": "In Stock",
+      "min": "Min",
+      "unit": "Unit",
+      "status": "Status",
+      "synced": "Synced"
+    },
+    "badge": {
+      "outOfStock": "Out of Stock",
+      "lowStock": "Low Stock",
+      "inStock": "In Stock"
+    },
+    "toast": {
+      "syncComplete": "Sync complete — {{count}} items updated"
+    }
+  },
+  "bankQR": {
+    "title": "Bank QR Config",
+    "subtitle": "Shown to customers after a QR Code payment order.",
+    "loading": "Loading...",
+    "form": {
+      "title": "Store Bank Account",
+      "subtitle": "Cashiers will see this after QR Code orders.",
+      "bankName": "Bank Name",
+      "accountName": "Account Name",
+      "accountNumber": "Account Number",
+      "promptpayId": "PromptPay ID",
+      "promptpayIdNote": "required for QR generation",
+      "promptpayIdHelp": "Leave blank to keep existing value.",
+      "qrImageUrl": "QR Image URL",
+      "qrImageUrlNote": "optional fallback",
+      "saving": "Saving...",
+      "update": "Update Config",
+      "save": "Save Config"
+    },
+    "preview": {
+      "title": "Preview",
+      "subtitle": "Generated PromptPay QR (static, no amount).",
+      "setPromptpay": "Set PromptPay ID and save to generate QR",
+      "notConfigured": "Not configured yet"
+    },
+    "detail": {
+      "bank": "Bank",
+      "account": "Account",
+      "number": "Number"
+    },
+    "toast": {
+      "saved": "Bank QR config saved"
+    }
+  },
+  "users": {
+    "title": "Users",
+    "form": {
+      "title": "Create New User",
+      "subtitle": "Add a new cashier or admin account to the system.",
+      "fullName": "Full Name",
+      "email": "Email",
+      "password": "Password",
+      "role": "Role",
+      "roleCashier": "Cashier",
+      "roleAdmin": "Admin",
+      "creating": "Creating...",
+      "createUser": "Create User"
+    },
+    "toast": {
+      "created": "User {{name}} created"
+    }
+  },
+  "validation": {
+    "required": "Required",
+    "invalidEmail": "Invalid email",
+    "minPassword": "Min 6 characters",
+    "mustBePositive": "Must be positive",
+    "invalidPromptpay": "Must be 10-digit phone or 13-digit national ID",
+    "invalidUrl": "Must be a valid URL"
+  }
+}

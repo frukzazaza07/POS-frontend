@@ -4,26 +4,63 @@ import {
   ShoppingCart, Package, ClipboardList, Database, Users,
   LogOut, Menu, X, CreditCard, QrCode,
 } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import { getCurrentUser, logout } from '@/services/auth'
 import { isAdmin } from '@/lib/auth'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
+import i18n from '@/i18n'
 
-const navItems = [
-  { label: 'POS',          href: '/',                  icon: ShoppingCart,  adminOnly: false },
-  { label: 'Products',     href: '/admin/products',     icon: Package,       adminOnly: true },
-  { label: 'Orders',       href: '/admin/orders',       icon: ClipboardList, adminOnly: true },
-  { label: 'Pay Later',    href: '/admin/pay-later',    icon: CreditCard,    adminOnly: true },
-  { label: 'Stock',        href: '/admin/stock',        icon: Database,      adminOnly: true },
-  { label: 'Bank QR',      href: '/admin/bank-qr',      icon: QrCode,        adminOnly: true },
-  { label: 'Users',        href: '/admin/users',        icon: Users,         adminOnly: true },
+const LANGUAGES = [
+  { code: 'en', label: 'EN' },
+  { code: 'th', label: 'TH' },
 ]
+
+function LanguageSwitcher() {
+  const { i18n: i18nHook } = useTranslation()
+  const current = i18nHook.language
+
+  const switchTo = (code: string) => {
+    i18n.changeLanguage(code)
+    localStorage.setItem('pos_lang', code)
+  }
+
+  return (
+    <div className="flex gap-1 mt-2">
+      {LANGUAGES.map((lang) => (
+        <button
+          key={lang.code}
+          onClick={() => switchTo(lang.code)}
+          className={cn(
+            'flex-1 py-1 rounded text-xs font-semibold transition-colors',
+            current === lang.code
+              ? 'bg-primary text-primary-foreground'
+              : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground border border-input',
+          )}
+        >
+          {lang.label}
+        </button>
+      ))}
+    </div>
+  )
+}
 
 export default function Layout() {
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const location = useLocation()
   const user = getCurrentUser()
   const admin = isAdmin()
+  const { t } = useTranslation()
+
+  const navItems = [
+    { label: t('nav.pos'),      href: '/',                  icon: ShoppingCart,  adminOnly: false },
+    { label: t('nav.products'), href: '/admin/products',     icon: Package,       adminOnly: true },
+    { label: t('nav.orders'),   href: '/admin/orders',       icon: ClipboardList, adminOnly: true },
+    { label: t('nav.payLater'), href: '/admin/pay-later',    icon: CreditCard,    adminOnly: true },
+    { label: t('nav.stock'),    href: '/admin/stock',        icon: Database,      adminOnly: true },
+    { label: t('nav.bankQR'),   href: '/admin/bank-qr',      icon: QrCode,        adminOnly: true },
+    { label: t('nav.users'),    href: '/admin/users',        icon: Users,         adminOnly: true },
+  ]
 
   const close = () => setSidebarOpen(false)
 
@@ -35,11 +72,11 @@ export default function Layout() {
         <button
           onClick={() => setSidebarOpen(true)}
           className="p-2 -ml-2 rounded-md hover:bg-accent transition-colors"
-          aria-label="Open menu"
+          aria-label={t('nav.openMenu')}
         >
           <Menu className="h-5 w-5" />
         </button>
-        <span className="font-bold text-base tracking-tight">POS System</span>
+        <span className="font-bold text-base tracking-tight">{t('nav.posSystem')}</span>
       </header>
 
       {/* ── Mobile backdrop ─────────────────────────────── */}
@@ -61,13 +98,13 @@ export default function Layout() {
       >
         <div className="p-4 border-b flex items-center justify-between">
           <div>
-            <h1 className="font-bold text-lg tracking-tight">POS System</h1>
-            <p className="text-xs text-muted-foreground mt-0.5">Point of Sale</p>
+            <h1 className="font-bold text-lg tracking-tight">{t('nav.posSystem')}</h1>
+            <p className="text-xs text-muted-foreground mt-0.5">{t('nav.pointOfSale')}</p>
           </div>
           <button
             onClick={close}
             className="lg:hidden p-1.5 rounded-md hover:bg-accent transition-colors"
-            aria-label="Close menu"
+            aria-label={t('nav.closeMenu')}
           >
             <X className="h-4 w-4" />
           </button>
@@ -99,8 +136,9 @@ export default function Layout() {
           <p className="text-xs text-muted-foreground capitalize mb-3">{user?.role}</p>
           <Button variant="outline" size="sm" className="w-full" onClick={logout}>
             <LogOut className="h-3.5 w-3.5" />
-            Logout
+            {t('nav.logout')}
           </Button>
+          <LanguageSwitcher />
         </div>
       </aside>
 

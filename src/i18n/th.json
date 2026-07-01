@@ -1,0 +1,266 @@
+{
+  "nav": {
+    "posSystem": "POS System",
+    "pointOfSale": "ระบบขายสินค้า",
+    "openMenu": "เปิดเมนู",
+    "closeMenu": "ปิดเมนู",
+    "pos": "ขายสินค้า",
+    "products": "สินค้า",
+    "orders": "ออเดอร์",
+    "payLater": "ค้างชำระ",
+    "stock": "สต็อก",
+    "bankQR": "QR ธนาคาร",
+    "users": "ผู้ใช้งาน",
+    "logout": "ออกจากระบบ"
+  },
+  "login": {
+    "signInToAccount": "เข้าสู่ระบบบัญชีของคุณ",
+    "email": "อีเมล",
+    "password": "รหัสผ่าน",
+    "signIn": "เข้าสู่ระบบ",
+    "signingIn": "กำลังเข้าสู่ระบบ..."
+  },
+  "pos": {
+    "searchProducts": "ค้นหาสินค้า...",
+    "scanBarcode": "สแกนบาร์โค้ด...",
+    "scanWithCamera": "สแกนด้วยกล้อง",
+    "loadingProducts": "กำลังโหลดสินค้า...",
+    "noProductsFound": "ไม่พบสินค้า",
+    "cart": "ตะกร้า",
+    "tapToAdd": "แตะสินค้าเพื่อเพิ่ม",
+    "clearCart": "ล้างตะกร้า",
+    "processing": "กำลังดำเนินการ...",
+    "confirmPayLater": "ยืนยัน — ค้างชำระ",
+    "confirmSale": "ยืนยันการขาย",
+    "customerName": "ชื่อลูกค้า *",
+    "customerPhone": "โทรศัพท์ *",
+    "dueDays": "จำนวนวันค้างชำระ",
+    "orderNotes": "หมายเหตุ...",
+    "total": "รวม",
+    "payment": {
+      "cash": "เงินสด",
+      "cashDesc": "ชำระที่เคาน์เตอร์",
+      "qrCode": "QR โค้ด",
+      "qrCodeDesc": "โอนผ่านธนาคาร",
+      "payLater": "ค้างชำระ",
+      "payLaterDesc": "เก็บเงินทีหลัง",
+      "qrCodeFull": "QR โค้ด / โอนผ่านธนาคาร"
+    },
+    "confirm": {
+      "scanToPay": "สแกนเพื่อชำระเงิน",
+      "confirmSale": "ยืนยันการขาย",
+      "showQRToCustomer": "แสดง QR ให้ลูกค้าสแกน ยืนยันเมื่อได้รับชำระแล้ว",
+      "reviewOrder": "ตรวจสอบออเดอร์ก่อนยืนยัน",
+      "generatingQR": "กำลังสร้าง QR...",
+      "qrUnavailable": "ไม่มี QR — กรุณาให้แอดมินตั้งค่า PromptPay ID",
+      "bank": "ธนาคาร",
+      "account": "ชื่อบัญชี",
+      "number": "เลขบัญชี",
+      "customer": "ลูกค้า",
+      "phone": "โทรศัพท์",
+      "payment": "การชำระเงิน",
+      "notes": "หมายเหตุ:",
+      "dueIn": "ครบกำหนดใน",
+      "days": "วัน",
+      "back": "กลับ",
+      "paymentReceived": "รับชำระแล้ว — ยืนยัน",
+      "confirmSubmit": "ยืนยันและส่งออเดอร์"
+    },
+    "toast": {
+      "customerNameRequired": "กรุณากรอกชื่อลูกค้าสำหรับการค้างชำระ",
+      "customerPhoneRequired": "กรุณากรอกเบอร์โทรศัพท์สำหรับการค้างชำระ",
+      "checkoutFailed": "ชำระเงินไม่สำเร็จ",
+      "productNotAvailable": "{{name}} ไม่พร้อมจำหน่าย",
+      "productAdded": "เพิ่มแล้ว: {{name}}",
+      "barcodeNotFound": "ไม่พบสินค้าสำหรับบาร์โค้ด: {{barcode}}",
+      "barcodeScanFailed": "สแกนบาร์โค้ดไม่สำเร็จ",
+      "orderSuccess": "ออเดอร์ {{id}} — ฿{{amount}}"
+    }
+  },
+  "camera": {
+    "title": "สแกนบาร์โค้ด",
+    "pointCamera": "ส่องกล้องไปที่บาร์โค้ดเพื่อเพิ่มสินค้า",
+    "cancel": "ยกเลิก",
+    "starting": "กำลังเปิดกล้อง...",
+    "permissionDenied": "ไม่ได้รับอนุญาตใช้กล้อง กรุณาอนุญาตและลองอีกครั้ง",
+    "noCamera": "ไม่พบกล้องในอุปกรณ์นี้"
+  },
+  "products": {
+    "title": "สินค้า",
+    "addProduct": "เพิ่มสินค้า",
+    "editProduct": "แก้ไขสินค้า",
+    "searchPlaceholder": "ค้นหาสินค้า...",
+    "noProductsFound": "ไม่พบสินค้า",
+    "loading": "กำลังโหลด...",
+    "count_one": "{{count}} รายการ",
+    "count_other": "{{count}} รายการ",
+    "table": {
+      "name": "ชื่อสินค้า",
+      "posId": "POS ID",
+      "category": "หมวดหมู่",
+      "price": "ราคา",
+      "status": "สถานะ",
+      "actions": "จัดการ"
+    },
+    "badge": {
+      "active": "ใช้งาน",
+      "inactive": "ไม่ใช้งาน"
+    },
+    "form": {
+      "posProductId": "POS Product ID",
+      "name": "ชื่อสินค้า",
+      "price": "ราคา (฿)",
+      "category": "หมวดหมู่",
+      "description": "รายละเอียด",
+      "active": "ใช้งาน",
+      "cancel": "ยกเลิก",
+      "saving": "กำลังบันทึก...",
+      "save": "บันทึก"
+    },
+    "confirm": {
+      "delete": "ต้องการลบสินค้านี้?"
+    },
+    "toast": {
+      "created": "เพิ่มสินค้าสำเร็จ",
+      "updated": "แก้ไขสินค้าสำเร็จ",
+      "deleted": "ลบสินค้าสำเร็จ"
+    }
+  },
+  "orders": {
+    "title": "ออเดอร์",
+    "loading": "กำลังโหลด...",
+    "noOrdersFound": "ไม่พบออเดอร์",
+    "count_one": "{{count}} รายการ",
+    "count_other": "{{count}} รายการ",
+    "previous": "ก่อนหน้า",
+    "next": "ถัดไป",
+    "table": {
+      "orderId": "หมายเลขออเดอร์",
+      "date": "วันที่",
+      "cashier": "แคชเชียร์",
+      "total": "ยอดรวม",
+      "status": "สถานะ"
+    },
+    "detail": {
+      "notes": "หมายเหตุ:",
+      "total": "รวม",
+      "cancelOrder": "ยกเลิกออเดอร์"
+    },
+    "toast": {
+      "cancelled": "ยกเลิกออเดอร์แล้ว"
+    }
+  },
+  "payLater": {
+    "title": "ค้างชำระ",
+    "all": "ทั้งหมด",
+    "overdue": "เกินกำหนด",
+    "loading": "กำลังโหลด...",
+    "noOverdueOrders": "ไม่มีออเดอร์เกินกำหนด",
+    "noPayLaterOrders": "ไม่มีออเดอร์ค้างชำระ",
+    "overdueLabel": "(เกินกำหนด)",
+    "count_one": "{{count}} รายการ",
+    "count_other": "{{count}} รายการ",
+    "table": {
+      "customer": "ลูกค้า",
+      "phone": "โทรศัพท์",
+      "amount": "ยอดเงิน",
+      "dueDate": "วันครบกำหนด",
+      "status": "สถานะ",
+      "action": "จัดการ"
+    },
+    "badge": {
+      "paid": "ชำระแล้ว",
+      "overdue": "เกินกำหนด",
+      "pending": "รอชำระ"
+    },
+    "markPaid": "ยืนยันรับชำระ",
+    "toast": {
+      "markedPaid": "บันทึกการชำระแล้ว"
+    }
+  },
+  "stock": {
+    "title": "สต็อก",
+    "loading": "กำลังโหลด...",
+    "lastRefreshed": "อัปเดตล่าสุด {{time}}",
+    "syncing": "กำลังซิงก์...",
+    "syncStock": "ซิงก์สต็อก",
+    "noStockData": "ไม่มีข้อมูลสต็อก",
+    "table": {
+      "sku": "SKU",
+      "name": "ชื่อ",
+      "inStock": "คงเหลือ",
+      "min": "ขั้นต่ำ",
+      "unit": "หน่วย",
+      "status": "สถานะ",
+      "synced": "ซิงก์ล่าสุด"
+    },
+    "badge": {
+      "outOfStock": "หมด",
+      "lowStock": "ใกล้หมด",
+      "inStock": "มีสินค้า"
+    },
+    "toast": {
+      "syncComplete": "ซิงก์สำเร็จ — อัปเดต {{count}} รายการ"
+    }
+  },
+  "bankQR": {
+    "title": "ตั้งค่า QR ธนาคาร",
+    "subtitle": "แสดงให้ลูกค้าเห็นหลังจากสั่งซื้อด้วย QR โค้ด",
+    "loading": "กำลังโหลด...",
+    "form": {
+      "title": "บัญชีธนาคารของร้าน",
+      "subtitle": "แคชเชียร์จะเห็นข้อมูลนี้หลังออเดอร์ QR โค้ด",
+      "bankName": "ชื่อธนาคาร",
+      "accountName": "ชื่อบัญชี",
+      "accountNumber": "เลขที่บัญชี",
+      "promptpayId": "PromptPay ID",
+      "promptpayIdNote": "จำเป็นสำหรับการสร้าง QR",
+      "promptpayIdHelp": "เว้นว่างเพื่อคงค่าเดิม",
+      "qrImageUrl": "URL รูป QR",
+      "qrImageUrlNote": "ตัวเลือกสำรอง",
+      "saving": "กำลังบันทึก...",
+      "update": "อัปเดตการตั้งค่า",
+      "save": "บันทึกการตั้งค่า"
+    },
+    "preview": {
+      "title": "ตัวอย่าง",
+      "subtitle": "QR PromptPay ที่สร้างขึ้น (ไม่ระบุจำนวนเงิน)",
+      "setPromptpay": "กรอก PromptPay ID และบันทึกเพื่อสร้าง QR",
+      "notConfigured": "ยังไม่ได้ตั้งค่า"
+    },
+    "detail": {
+      "bank": "ธนาคาร",
+      "account": "ชื่อบัญชี",
+      "number": "เลขบัญชี"
+    },
+    "toast": {
+      "saved": "บันทึกการตั้งค่า QR ธนาคารแล้ว"
+    }
+  },
+  "users": {
+    "title": "ผู้ใช้งาน",
+    "form": {
+      "title": "สร้างผู้ใช้ใหม่",
+      "subtitle": "เพิ่มบัญชีแคชเชียร์หรือแอดมินในระบบ",
+      "fullName": "ชื่อ-นามสกุล",
+      "email": "อีเมล",
+      "password": "รหัสผ่าน",
+      "role": "บทบาท",
+      "roleCashier": "แคชเชียร์",
+      "roleAdmin": "แอดมิน",
+      "creating": "กำลังสร้าง...",
+      "createUser": "สร้างผู้ใช้"
+    },
+    "toast": {
+      "created": "สร้างผู้ใช้ {{name}} สำเร็จ"
+    }
+  },
+  "validation": {
+    "required": "กรุณากรอกข้อมูล",
+    "invalidEmail": "อีเมลไม่ถูกต้อง",
+    "minPassword": "ต้องมีอย่างน้อย 6 ตัวอักษร",
+    "mustBePositive": "ต้องเป็นค่าบวก",
+    "invalidPromptpay": "ต้องเป็นเบอร์โทร 10 หลัก หรือเลขบัตรประชาชน 13 หลัก",
+    "invalidUrl": "URL ไม่ถูกต้อง"
+  }
+}
