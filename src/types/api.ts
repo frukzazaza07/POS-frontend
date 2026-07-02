@@ -126,3 +126,39 @@ export interface PaginatedResponse<T> {
   page: number
   limit: number
 }
+
+export interface SummaryReport {
+  from: string
+  to: string
+  total_revenue: number
+  order_count: number
+  avg_order_value: number
+  by_status: Array<{ status: OrderStatus; count: number; total_amount: number }>
+  by_payment_method: Array<{ payment_method: PaymentMethod; count: number; total_amount: number }>
+}
+
+export interface DailyRevenue {
+  date: string
+  revenue: number
+  order_count: number
+}
+
+export interface TopProduct {
+  pos_product_id: string
+  product_name: string
+  total_qty: number
+  total_revenue: number
+}
+
+export interface CategoryRevenue {
+  category: string
+  revenue: number
+  order_count: number
+}
+
+export interface CashierSales {
+  cashier_id: string
+  cashier_name: string
+  order_count: number
+  revenue: number
+}

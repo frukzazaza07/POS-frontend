@@ -10,6 +10,11 @@ api.interceptors.request.use((config) => {
   if (token) {
     config.headers.Authorization = `Bearer ${token}`
   }
+
+  // Attach language so backend error messages come back in the right language
+  const lang = localStorage.getItem('pos_lang') ?? 'en'
+  config.headers['Accept-Language'] = lang
+
   return config
 })
 

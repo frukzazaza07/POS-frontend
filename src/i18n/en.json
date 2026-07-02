@@ -10,6 +10,7 @@
     "payLater": "Pay Later",
     "stock": "Stock",
     "bankQR": "Bank QR",
+    "reports": "Reports",
     "users": "Users",
     "logout": "Logout"
   },
@@ -235,6 +236,37 @@
     },
     "toast": {
       "saved": "Bank QR config saved"
+    }
+  },
+  "reports": {
+    "title": "Reports",
+    "subtitle": "Revenue and sales insights across the selected date range.",
+    "from": "From",
+    "to": "To",
+    "loading": "Loading...",
+    "noData": "No data for this range",
+    "noOverdue": "No overdue orders",
+    "summary": {
+      "totalRevenue": "Total Revenue",
+      "orderCount": "Orders",
+      "avgOrderValue": "Avg Order Value"
+    },
+    "byStatus": "By Status",
+    "byPaymentMethod": "By Payment Method",
+    "dailyRevenue": "Daily Revenue",
+    "topProducts": "Top Products",
+    "categoryRevenue": "Revenue by Category",
+    "cashierSales": "Cashier Sales",
+    "overduePayLater": "Overdue Pay-Later Orders",
+    "overduePayLaterSubtitle": "All unpaid, overdue orders — not limited to the date range above.",
+    "table": {
+      "cashier": "Cashier",
+      "orders": "Orders",
+      "revenue": "Revenue",
+      "customer": "Customer",
+      "phone": "Phone",
+      "amount": "Amount",
+      "dueDate": "Due Date"
     }
   },
   "users": {
