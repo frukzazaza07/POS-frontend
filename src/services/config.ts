@@ -1,5 +1,5 @@
 import api from '@/lib/api'
-import type { ApiResponse, BankQRConfig } from '@/types/api'
+import type { ApiResponse, BankQRConfig, VatConfig } from '@/types/api'
 
 export interface BankQRConfigPayload {
   bank_name: string
@@ -16,6 +16,22 @@ export async function getBankQRConfig(): Promise<BankQRConfig> {
 
 export async function setBankQRConfig(body: BankQRConfigPayload): Promise<BankQRConfig> {
   const { data } = await api.put<ApiResponse<BankQRConfig>>('/api/v1/config/bank-qr', body)
+  return data.data!
+}
+
+export interface VatConfigPayload {
+  enabled: boolean
+  rate: number
+  price_includes_vat: boolean
+}
+
+export async function getVatConfig(): Promise<VatConfig> {
+  const { data } = await api.get<ApiResponse<VatConfig>>('/api/v1/config/vat')
+  return data.data!
+}
+
+export async function setVatConfig(body: VatConfigPayload): Promise<VatConfig> {
+  const { data } = await api.put<ApiResponse<VatConfig>>('/api/v1/config/vat', body)
   return data.data!
 }
 

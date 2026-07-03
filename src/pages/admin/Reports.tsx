@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { cn } from '@/lib/utils'
 import {
   ResponsiveContainer,
   AreaChart,
@@ -116,6 +117,30 @@ export default function ReportsPage() {
             </CardTitle>
           </CardHeader>
         </Card>
+        <Card>
+          <CardHeader className="pb-2">
+            <CardDescription>{t('reports.summary.totalCost')}</CardDescription>
+            <CardTitle className="text-2xl">
+              {summaryLoading ? '—' : `฿${(summary?.total_cost ?? 0).toFixed(2)}`}
+            </CardTitle>
+          </CardHeader>
+        </Card>
+        <Card>
+          <CardHeader className="pb-2">
+            <CardDescription>{t('reports.summary.grossProfit')}</CardDescription>
+            <CardTitle className={cn('text-2xl', (summary?.gross_profit ?? 0) < 0 && 'text-destructive')}>
+              {summaryLoading ? '—' : `฿${(summary?.gross_profit ?? 0).toFixed(2)}`}
+            </CardTitle>
+          </CardHeader>
+        </Card>
+        <Card>
+          <CardHeader className="pb-2">
+            <CardDescription>{t('reports.summary.totalVat')}</CardDescription>
+            <CardTitle className="text-2xl">
+              {summaryLoading ? '—' : `฿${(summary?.total_vat ?? 0).toFixed(2)}`}
+            </CardTitle>
+          </CardHeader>
+        </Card>
       </div>
 
       {/* Breakdown by status / payment method */}
@@ -211,6 +236,30 @@ export default function ReportsPage() {
                   <Bar dataKey="total_qty" fill="#16a34a" radius={[0, 4, 4, 0]} />
                 </BarChart>
               </ResponsiveContainer>
+            )}
+            {topProducts && topProducts.length > 0 && (
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>{t('reports.table.product')}</TableHead>
+                    <TableHead>{t('reports.table.revenue')}</TableHead>
+                    <TableHead>{t('reports.table.cost')}</TableHead>
+                    <TableHead>{t('reports.table.profit')}</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {topProducts.map((p) => (
+                    <TableRow key={p.pos_product_id}>
+                      <TableCell className="font-medium">{p.product_name}</TableCell>
+                      <TableCell>฿{p.total_revenue.toFixed(2)}</TableCell>
+                      <TableCell className="text-muted-foreground">฿{p.total_cost.toFixed(2)}</TableCell>
+                      <TableCell className={p.profit >= 0 ? 'text-green-700 font-medium' : 'text-destructive font-medium'}>
+                        ฿{p.profit.toFixed(2)}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
             )}
           </CardContent>
         </Card>

@@ -18,6 +18,7 @@ export interface POSProduct {
   name: string
   description: string
   price: number
+  cost_price?: number // admin only — absent/omitted for cashier role
   category: string
   is_active: boolean
   created_at: string
@@ -32,6 +33,7 @@ export interface OrderItem {
   quantity: number
   unit_price: number
   subtotal: number
+  cost_price?: number // admin only
 }
 
 export interface Order {
@@ -41,6 +43,11 @@ export interface Order {
   cashier?: User
   status: OrderStatus
   total_amount: number
+  total_cost?: number // admin only
+  profit?: number      // admin only — total_amount - total_cost
+  vat_rate?: number     // 0 if VAT disabled — visible to all roles
+  vat_amount?: number
+  net_amount?: number   // total_amount - vat_amount (pre-tax price)
   payment_method: PaymentMethod
   notes: string
   fail_reason?: string
@@ -63,6 +70,13 @@ export interface BankQRConfig {
   promptpay_id?: string
   qr_image_url: string
   is_active: boolean
+}
+
+export interface VatConfig {
+  id: string
+  enabled: boolean
+  rate: number               // percent, e.g. 7 for 7%
+  price_includes_vat: boolean // true = product prices already include VAT
 }
 
 export interface StockItem {
@@ -131,6 +145,9 @@ export interface SummaryReport {
   from: string
   to: string
   total_revenue: number
+  total_cost: number
+  gross_profit: number
+  total_vat: number
   order_count: number
   avg_order_value: number
   by_status: Array<{ status: OrderStatus; count: number; total_amount: number }>
@@ -148,6 +165,8 @@ export interface TopProduct {
   product_name: string
   total_qty: number
   total_revenue: number
+  total_cost: number
+  profit: number
 }
 
 export interface CategoryRevenue {

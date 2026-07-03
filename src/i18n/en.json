@@ -10,6 +10,7 @@
     "payLater": "Pay Later",
     "stock": "Stock",
     "bankQR": "Bank QR",
+    "vat": "VAT",
     "reports": "Reports",
     "users": "Users",
     "logout": "Logout"
@@ -38,6 +39,10 @@
     "dueDays": "Due days",
     "orderNotes": "Order notes...",
     "total": "Total",
+    "vat": {
+      "subtotal": "Subtotal (excl. VAT)",
+      "vatRate": "VAT ({{rate}}%)"
+    },
     "payment": {
       "cash": "Cash",
       "cashDesc": "Pay at counter",
@@ -100,6 +105,7 @@
       "posId": "POS ID",
       "category": "Category",
       "price": "Price",
+      "costPrice": "Cost",
       "status": "Status",
       "actions": "Actions"
     },
@@ -111,6 +117,7 @@
       "posProductId": "POS Product ID",
       "name": "Name",
       "price": "Price (฿)",
+      "costPrice": "Cost Price (฿)",
       "category": "Category",
       "description": "Description",
       "active": "Active",
@@ -145,6 +152,10 @@
     "detail": {
       "notes": "Notes:",
       "total": "Total",
+      "subtotalExclVat": "Subtotal (excl. VAT)",
+      "vat": "VAT ({{rate}}%)",
+      "cost": "Cost",
+      "profit": "Profit",
       "cancelOrder": "Cancel Order"
     },
     "toast": {
@@ -238,6 +249,32 @@
       "saved": "Bank QR config saved"
     }
   },
+  "vatConfig": {
+    "title": "VAT Config",
+    "subtitle": "Controls how VAT is calculated and shown on orders.",
+    "loading": "Loading...",
+    "form": {
+      "title": "VAT Settings",
+      "subtitle": "Applies to all new orders once saved.",
+      "enabled": "Enable VAT",
+      "rate": "VAT Rate (%)",
+      "rateMax": "Must be 100 or less",
+      "priceIncludesVat": "Product prices already include VAT",
+      "priceIncludesVatHelp": "Total charged to the customer stays the same; VAT is backed out of the price.",
+      "priceExcludesVatHelp": "VAT is added on top of the product price at checkout.",
+      "saving": "Saving...",
+      "save": "Save Config"
+    },
+    "preview": {
+      "title": "Example (฿100 product)",
+      "productPrice": "Product price",
+      "vatAdded": "VAT added ({{rate}}%)",
+      "customerPays": "Customer pays"
+    },
+    "toast": {
+      "saved": "VAT config saved"
+    }
+  },
   "reports": {
     "title": "Reports",
     "subtitle": "Revenue and sales insights across the selected date range.",
@@ -249,7 +286,10 @@
     "summary": {
       "totalRevenue": "Total Revenue",
       "orderCount": "Orders",
-      "avgOrderValue": "Avg Order Value"
+      "avgOrderValue": "Avg Order Value",
+      "totalCost": "Total Cost",
+      "grossProfit": "Gross Profit",
+      "totalVat": "Total VAT"
     },
     "byStatus": "By Status",
     "byPaymentMethod": "By Payment Method",
@@ -266,7 +306,10 @@
       "customer": "Customer",
       "phone": "Phone",
       "amount": "Amount",
-      "dueDate": "Due Date"
+      "dueDate": "Due Date",
+      "product": "Product",
+      "cost": "Cost",
+      "profit": "Profit"
     }
   },
   "users": {

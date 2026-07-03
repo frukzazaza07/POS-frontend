@@ -48,6 +48,7 @@ function ProductDialog({
     name: z.string().min(1, t('validation.required')),
     description: z.string().optional(),
     price: z.coerce.number().positive(t('validation.mustBePositive')),
+    cost_price: z.coerce.number().min(0, t('validation.mustBePositive')).optional(),
     category: z.string().optional(),
     is_active: z.boolean().optional(),
   }), [t])
@@ -67,10 +68,11 @@ function ProductDialog({
           name: product.name,
           description: product.description,
           price: product.price,
+          cost_price: product.cost_price,
           category: product.category,
           is_active: product.is_active,
         }
-      : { pos_product_id: '', name: '', description: '', price: 0, category: '', is_active: true },
+      : { pos_product_id: '', name: '', description: '', price: 0, cost_price: undefined, category: '', is_active: true },
   })
 
   const onSubmit = async (values: FormValues) => {
@@ -129,9 +131,17 @@ function ProductDialog({
               <Input placeholder="beverages" {...register('category')} />
             </div>
             <div className="space-y-1">
-              <Label>{t('products.form.description')}</Label>
-              <Input placeholder="Optional" {...register('description')} />
+              <Label>{t('products.form.costPrice')}</Label>
+              <Input type="number" step="0.01" placeholder="22.50" {...register('cost_price')} />
+              {errors.cost_price && (
+                <p className="text-xs text-destructive">{errors.cost_price.message}</p>
+              )}
             </div>
+          </div>
+
+          <div className="space-y-1">
+            <Label>{t('products.form.description')}</Label>
+            <Input placeholder="Optional" {...register('description')} />
           </div>
 
           <div className="flex items-center gap-2">
@@ -224,6 +234,7 @@ export default function ProductsPage() {
               <TableHead className="hidden md:table-cell">{t('products.table.posId')}</TableHead>
               <TableHead className="hidden sm:table-cell">{t('products.table.category')}</TableHead>
               <TableHead>{t('products.table.price')}</TableHead>
+              <TableHead className="hidden lg:table-cell">{t('products.table.costPrice')}</TableHead>
               <TableHead>{t('products.table.status')}</TableHead>
               <TableHead className="w-20">{t('products.table.actions')}</TableHead>
             </TableRow>
@@ -231,7 +242,7 @@ export default function ProductsPage() {
           <TableBody>
             {products.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={6} className="text-center text-muted-foreground py-12">
+                <TableCell colSpan={7} className="text-center text-muted-foreground py-12">
                   {t('products.noProductsFound')}
                 </TableCell>
               </TableRow>
@@ -244,6 +255,9 @@ export default function ProductsPage() {
                   </TableCell>
                   <TableCell className="hidden sm:table-cell capitalize">{p.category}</TableCell>
                   <TableCell>฿{p.price.toFixed(2)}</TableCell>
+                  <TableCell className="hidden lg:table-cell text-muted-foreground">
+                    {p.cost_price != null ? `฿${p.cost_price.toFixed(2)}` : '—'}
+                  </TableCell>
                   <TableCell>
                     <Badge variant={p.is_active ? 'success' : 'secondary'}>
                       {p.is_active ? t('products.badge.active') : t('products.badge.inactive')}

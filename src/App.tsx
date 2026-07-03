@@ -11,6 +11,7 @@ import StockPage from '@/pages/admin/Stock'
 import UsersPage from '@/pages/admin/Users'
 import PayLaterPage from '@/pages/admin/PayLater'
 import BankQRConfigPage from '@/pages/admin/BankQRConfig'
+import VatConfigPage from '@/pages/admin/VatConfig'
 import ReportsPage from '@/pages/admin/Reports'
 
 export default function App() {
@@ -31,6 +32,7 @@ export default function App() {
             <Route path="/admin/pay-later" element={<PayLaterPage />} />
             <Route path="/admin/stock"     element={<StockPage />} />
             <Route path="/admin/bank-qr"   element={<BankQRConfigPage />} />
+            <Route path="/admin/vat"       element={<VatConfigPage />} />
             <Route path="/admin/users"     element={<UsersPage />} />
             <Route path="/admin/reports"   element={<ReportsPage />} />
           </Route>

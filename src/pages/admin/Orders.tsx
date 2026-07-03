@@ -103,10 +103,38 @@ function OrderDetailsDialog({
             ))}
           </div>
 
+          {!!order.vat_amount && (
+            <div className="text-sm space-y-0.5">
+              <div className="flex justify-between text-muted-foreground">
+                <span>{t('orders.detail.subtotalExclVat')}</span>
+                <span>฿{order.net_amount!.toFixed(2)}</span>
+              </div>
+              <div className="flex justify-between text-muted-foreground">
+                <span>{t('orders.detail.vat', { rate: order.vat_rate })}</span>
+                <span>฿{order.vat_amount.toFixed(2)}</span>
+              </div>
+            </div>
+          )}
+
           <div className="flex justify-between font-bold text-base pt-1">
             <span>{t('orders.detail.total')}</span>
             <span>฿{order.total_amount.toFixed(2)}</span>
           </div>
+
+          {order.total_cost != null && order.profit != null && (
+            <div className="text-sm space-y-0.5 border-t pt-2">
+              <div className="flex justify-between text-muted-foreground">
+                <span>{t('orders.detail.cost')}</span>
+                <span>฿{order.total_cost.toFixed(2)}</span>
+              </div>
+              <div className="flex justify-between font-medium">
+                <span>{t('orders.detail.profit')}</span>
+                <span className={order.profit >= 0 ? 'text-green-700' : 'text-destructive'}>
+                  ฿{order.profit.toFixed(2)}
+                </span>
+              </div>
+            </div>
+          )}
 
           {canCancel && (
             <Button variant="destructive" className="w-full" onClick={handleCancel}>

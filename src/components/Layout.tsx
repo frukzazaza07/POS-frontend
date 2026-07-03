@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Link, useLocation, Outlet } from 'react-router-dom'
 import {
   ShoppingCart, Package, ClipboardList, Database, Users,
-  LogOut, Menu, X, CreditCard, QrCode, BarChart3,
+  LogOut, Menu, X, CreditCard, QrCode, BarChart3, Percent,
 } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { getCurrentUser, logout } from '@/services/auth'
@@ -59,6 +59,7 @@ export default function Layout() {
     { label: t('nav.payLater'), href: '/admin/pay-later',    icon: CreditCard,    adminOnly: true },
     { label: t('nav.stock'),    href: '/admin/stock',        icon: Database,      adminOnly: true },
     { label: t('nav.bankQR'),   href: '/admin/bank-qr',      icon: QrCode,        adminOnly: true },
+    { label: t('nav.vat'),      href: '/admin/vat',          icon: Percent,       adminOnly: true },
     { label: t('nav.reports'),  href: '/admin/reports',      icon: BarChart3,     adminOnly: true },
     { label: t('nav.users'),    href: '/admin/users',        icon: Users,         adminOnly: true },
   ]

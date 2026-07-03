@@ -23,6 +23,7 @@ export async function createProduct(payload: {
   name: string
   description?: string
   price: number
+  cost_price?: number
   category?: string
   is_active?: boolean
 }): Promise<POSProduct> {
@@ -36,6 +37,7 @@ export async function updateProduct(
     name: string
     description: string
     price: number
+    cost_price: number
     category: string
     is_active: boolean
   }>,

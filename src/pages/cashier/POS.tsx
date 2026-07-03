@@ -1,13 +1,14 @@
-import { useState, useEffect, useRef, useCallback } from 'react'
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import { ArrowLeft, Barcode, Camera, Minus, Plus, Search, ShoppingCart, Trash2 } from 'lucide-react'
 import { toast } from 'sonner'
 import { useTranslation } from 'react-i18next'
+import { useQuery } from '@tanstack/react-query'
 import { useProducts } from '@/hooks/useProducts'
 import { useBarcodeScanner } from '@/hooks/useBarcodeScanner'
 import { useCart, selectTotal } from '@/store/cart'
 import { createOrder } from '@/services/orders'
 import { getProductByBarcode, getProduct } from '@/services/products'
-import { getBankQRConfig, fetchQRCodeBlob } from '@/services/config'
+import { getBankQRConfig, getVatConfig, fetchQRCodeBlob } from '@/services/config'
 import { getErrorMessage } from '@/lib/errors'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
@@ -24,6 +25,32 @@ import {
 } from '@/components/ui/dialog'
 import type { BankQRConfig, PaymentMethod, POSProduct } from '@/types/api'
 import CameraScanner from '@/components/CameraScanner'
+
+interface VatBreakdown {
+  net: number
+  vatAmount: number
+  grandTotal: number
+  rate: number
+}
+
+function useVatBreakdown(subtotal: number): VatBreakdown | null {
+  const { data: vatConfig } = useQuery({
+    queryKey: ['vat-config'],
+    queryFn: getVatConfig,
+    staleTime: 1000 * 60,
+  })
+
+  return useMemo(() => {
+    if (!vatConfig?.enabled || subtotal <= 0) return null
+    const rate = vatConfig.rate
+    if (vatConfig.price_includes_vat) {
+      const net = subtotal / (1 + rate / 100)
+      return { net, vatAmount: subtotal - net, grandTotal: subtotal, rate }
+    }
+    const vatAmount = subtotal * (rate / 100)
+    return { net: subtotal, vatAmount, grandTotal: subtotal + vatAmount, rate }
+  }, [vatConfig, subtotal])
+}
 
 const CATEGORY_EMOJI: Record<string, string> = {
   beverages: '☕',
@@ -130,6 +157,7 @@ interface CartFooterProps {
   dueDays: number
   onDueDaysChange: (v: number) => void
   total: number
+  vatBreakdown: VatBreakdown | null
   onCheckout: () => void
   onClear: () => void
   loading: boolean
@@ -142,7 +170,7 @@ function CartFooter({
   customerName, onCustomerNameChange,
   customerPhone, onCustomerPhoneChange,
   dueDays, onDueDaysChange,
-  total, onCheckout, onClear,
+  total, vatBreakdown, onCheckout, onClear,
   loading, hasItems,
 }: CartFooterProps) {
   const { t } = useTranslation()
@@ -204,6 +232,19 @@ function CartFooter({
         onChange={(e) => onNotesChange(e.target.value)}
       />
 
+      {vatBreakdown && (
+        <div className="text-sm space-y-0.5">
+          <div className="flex justify-between text-muted-foreground">
+            <span>{t('pos.vat.subtotal')}</span>
+            <span>฿{vatBreakdown.net.toFixed(2)}</span>
+          </div>
+          <div className="flex justify-between text-muted-foreground">
+            <span>{t('pos.vat.vatRate', { rate: vatBreakdown.rate })}</span>
+            <span>฿{vatBreakdown.vatAmount.toFixed(2)}</span>
+          </div>
+        </div>
+      )}
+
       <div className="flex justify-between items-center">
         <span className="text-sm font-medium text-muted-foreground">{t('pos.total')}</span>
         <span className="text-xl font-bold">฿{total.toFixed(2)}</span>
@@ -241,6 +282,7 @@ function ConfirmOrderDialog({
   dueDays,
   notes,
   total,
+  vatBreakdown,
   loading,
 }: {
   open: boolean
@@ -252,6 +294,7 @@ function ConfirmOrderDialog({
   dueDays: number
   notes: string
   total: number
+  vatBreakdown: VatBreakdown | null
   loading: boolean
 }) {
   const { t } = useTranslation()
@@ -375,8 +418,22 @@ function ConfirmOrderDialog({
             </p>
           )}
 
+          {/* VAT breakdown */}
+          {vatBreakdown && (
+            <div className="text-sm space-y-0.5 border-t pt-3">
+              <div className="flex justify-between text-muted-foreground">
+                <span>{t('pos.vat.subtotal')}</span>
+                <span>฿{vatBreakdown.net.toFixed(2)}</span>
+              </div>
+              <div className="flex justify-between text-muted-foreground">
+                <span>{t('pos.vat.vatRate', { rate: vatBreakdown.rate })}</span>
+                <span>฿{vatBreakdown.vatAmount.toFixed(2)}</span>
+              </div>
+            </div>
+          )}
+
           {/* Total */}
-          <div className="flex justify-between items-center border-t pt-3 font-bold">
+          <div className={cn('flex justify-between items-center font-bold', !vatBreakdown && 'border-t pt-3')}>
             <span>{t('pos.total')}</span>
             <span className="text-primary text-xl">฿{total.toFixed(2)}</span>
           </div>
@@ -422,7 +479,9 @@ export default function POSPage() {
   const items = useCart((s) => s.items)
   const add = useCart((s) => s.add)
   const clear = useCart((s) => s.clear)
-  const total = useCart(selectTotal)
+  const subtotal = useCart(selectTotal)
+  const vatBreakdown = useVatBreakdown(subtotal)
+  const total = vatBreakdown?.grandTotal ?? subtotal
   const itemCount = items.reduce((s, i) => s + i.quantity, 0)
 
   const handleBarcodeSubmit = useCallback(async (barcode: string) => {
@@ -507,6 +566,7 @@ export default function POSPage() {
     customerPhone, onCustomerPhoneChange: setCustomerPhone,
     dueDays, onDueDaysChange: setDueDays,
     total,
+    vatBreakdown,
     onCheckout: handleOpenConfirm,
     onClear: () => { clear(); resetForm() },
     loading,
@@ -636,6 +696,7 @@ export default function POSPage() {
         dueDays={dueDays}
         notes={notes}
         total={total}
+        vatBreakdown={vatBreakdown}
         loading={loading}
       />
 

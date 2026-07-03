@@ -10,6 +10,7 @@
     "payLater": "ค้างชำระ",
     "stock": "สต็อก",
     "bankQR": "QR ธนาคาร",
+    "vat": "ภาษีมูลค่าเพิ่ม",
     "reports": "รายงาน",
     "users": "ผู้ใช้งาน",
     "logout": "ออกจากระบบ"
@@ -38,6 +39,10 @@
     "dueDays": "จำนวนวันค้างชำระ",
     "orderNotes": "หมายเหตุ...",
     "total": "รวม",
+    "vat": {
+      "subtotal": "ยอดก่อนภาษี (ไม่รวม VAT)",
+      "vatRate": "VAT ({{rate}}%)"
+    },
     "payment": {
       "cash": "เงินสด",
       "cashDesc": "ชำระที่เคาน์เตอร์",
@@ -100,6 +105,7 @@
       "posId": "POS ID",
       "category": "หมวดหมู่",
       "price": "ราคา",
+      "costPrice": "ต้นทุน",
       "status": "สถานะ",
       "actions": "จัดการ"
     },
@@ -111,6 +117,7 @@
       "posProductId": "POS Product ID",
       "name": "ชื่อสินค้า",
       "price": "ราคา (฿)",
+      "costPrice": "ราคาต้นทุน (฿)",
       "category": "หมวดหมู่",
       "description": "รายละเอียด",
       "active": "ใช้งาน",
@@ -145,6 +152,10 @@
     "detail": {
       "notes": "หมายเหตุ:",
       "total": "รวม",
+      "subtotalExclVat": "ยอดก่อนภาษี (ไม่รวม VAT)",
+      "vat": "VAT ({{rate}}%)",
+      "cost": "ต้นทุน",
+      "profit": "กำไร",
       "cancelOrder": "ยกเลิกออเดอร์"
     },
     "toast": {
@@ -238,6 +249,32 @@
       "saved": "บันทึกการตั้งค่า QR ธนาคารแล้ว"
     }
   },
+  "vatConfig": {
+    "title": "ตั้งค่าภาษีมูลค่าเพิ่ม",
+    "subtitle": "กำหนดวิธีคำนวณและแสดง VAT บนออเดอร์",
+    "loading": "กำลังโหลด...",
+    "form": {
+      "title": "การตั้งค่า VAT",
+      "subtitle": "มีผลกับออเดอร์ใหม่ทั้งหมดหลังบันทึก",
+      "enabled": "เปิดใช้งาน VAT",
+      "rate": "อัตรา VAT (%)",
+      "rateMax": "ต้องไม่เกิน 100",
+      "priceIncludesVat": "ราคาสินค้ารวม VAT อยู่แล้ว",
+      "priceIncludesVatHelp": "ยอดที่เรียกเก็บจากลูกค้าเท่าเดิม โดยแยก VAT ออกจากราคาสินค้า",
+      "priceExcludesVatHelp": "VAT จะถูกบวกเพิ่มจากราคาสินค้าตอนชำระเงิน",
+      "saving": "กำลังบันทึก...",
+      "save": "บันทึกการตั้งค่า"
+    },
+    "preview": {
+      "title": "ตัวอย่าง (สินค้าราคา ฿100)",
+      "productPrice": "ราคาสินค้า",
+      "vatAdded": "VAT ที่เพิ่ม ({{rate}}%)",
+      "customerPays": "ยอดที่ลูกค้าจ่าย"
+    },
+    "toast": {
+      "saved": "บันทึกการตั้งค่า VAT แล้ว"
+    }
+  },
   "reports": {
     "title": "รายงาน",
     "subtitle": "ข้อมูลยอดขายและรายได้ในช่วงวันที่ที่เลือก",
@@ -249,7 +286,10 @@
     "summary": {
       "totalRevenue": "รายได้รวม",
       "orderCount": "จำนวนออเดอร์",
-      "avgOrderValue": "ยอดเฉลี่ยต่อออเดอร์"
+      "avgOrderValue": "ยอดเฉลี่ยต่อออเดอร์",
+      "totalCost": "ต้นทุนรวม",
+      "grossProfit": "กำไรขั้นต้น",
+      "totalVat": "VAT รวม"
     },
     "byStatus": "แยกตามสถานะ",
     "byPaymentMethod": "แยกตามวิธีชำระเงิน",
@@ -266,7 +306,10 @@
       "customer": "ลูกค้า",
       "phone": "โทรศัพท์",
       "amount": "ยอดเงิน",
-      "dueDate": "วันครบกำหนด"
+      "dueDate": "วันครบกำหนด",
+      "product": "สินค้า",
+      "cost": "ต้นทุน",
+      "profit": "กำไร"
     }
   },
   "users": {
